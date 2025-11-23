@@ -1,0 +1,441 @@
+{% extends "base.html" %} {% block title %}Upload - Green Corridor System{%
+endblock %} {% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="text-center mb-5" data-aos="fade-down">
+        <h1 class="display-4 fw-bold text-white mb-3">
+          <i class="fas fa-upload me-3"></i>Upload & Analyze
+        </h1>
+        <p class="lead text-white-50">
+          Upload videos or images to detect emergency vehicles
+        </p>
+      </div>
+
+      <!-- Upload Section -->
+      <div class="card mb-4" data-aos="fade-up">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">
+            <i class="fas fa-cloud-upload-alt me-2"></i>File Upload
+          </h4>
+        </div>
+        <div class="card-body">
+          <form id="uploadForm" enctype="multipart/form-data">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="fileInput" class="form-label fw-bold"
+                    >Select File</label
+                  >
+                  <input
+                    type="file"
+                    class="form-control form-control-lg"
+                    id="fileInput"
+                    name="file"
+                    accept=".jpg,.jpeg,.png,.gif,.mp4,.avi,.mov,.mkv"
+                    required
+                  />
+                  <div class="form-text">
+                    <strong>Supported formats:</strong><br />
+                    <i class="fas fa-image text-info me-1"></i> Images: JPG,
+                    PNG, GIF<br />
+                    <i class="fas fa-video text-success me-1"></i> Videos: MP4,
+                    AVI, MOV, MKV<br />
+                    <i class="fas fa-info-circle text-warning me-1"></i> Max
+                    size: 16MB
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label fw-bold">Detection Settings</label>
+                  <div class="card bg-light">
+                    <div class="card-body">
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="highConfidence"
+                          checked
+                        />
+                        <label class="form-check-label" for="highConfidence">
+                          High Confidence Mode (40%+ threshold)
+                        </label>
+                      </div>
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="saveResults"
+                          checked
+                        />
+                        <label class="form-check-label" for="saveResults">
+                          Save detection results
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+              <button
+                type="submit"
+                class="btn btn-primary btn-lg me-md-2"
+                id="uploadBtn"
+              >
+                <i class="fas fa-upload me-2"></i>Upload & Analyze
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary btn-lg"
+                id="clearBtn"
+              >
+                <i class="fas fa-trash me-2"></i>Clear
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Progress Section -->
+      <div
+        class="card mb-4"
+        id="progressSection"
+        style="display: none"
+        data-aos="fade-up"
+      >
+        <div class="card-body">
+          <h5><i class="fas fa-cog fa-spin me-2"></i>Processing...</h5>
+          <div class="progress mb-3">
+            <div
+              class="progress-bar progress-bar-striped progress-bar-animated"
+              id="progressBar"
+              role="progressbar"
+              style="width: 0%"
+            ></div>
+          </div>
+          <div id="progressText">Initializing detection...</div>
+        </div>
+      </div>
+
+      <!-- Results Section -->
+      <div
+        class="card"
+        id="resultsSection"
+        style="display: none"
+        data-aos="fade-up"
+      >
+        <div class="card-header bg-success text-white">
+          <h4 class="mb-0">
+            <i class="fas fa-chart-bar me-2"></i>Detection Results
+          </h4>
+        </div>
+        <div class="card-body" id="resultsContent">
+          <!-- Results will be populated here -->
+        </div>
+      </div>
+
+      <!-- Emergency Alert -->
+      <div class="alert alert-danger d-none" id="emergencyAlert" role="alert">
+        <h4 class="alert-heading">
+          <i class="fas fa-exclamation-triangle me-2"></i>Emergency Vehicle
+          Detected!
+        </h4>
+        <p class="mb-0">
+          Green corridor has been activated for priority traffic flow.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+  document
+    .getElementById("uploadForm")
+    .addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const fileInput = document.getElementById("fileInput");
+      const uploadBtn = document.getElementById("uploadBtn");
+      const progressSection = document.getElementById("progressSection");
+      const resultsSection = document.getElementById("resultsSection");
+      const emergencyAlert = document.getElementById("emergencyAlert");
+
+      if (!fileInput.files[0]) {
+        showAlert("Please select a file to upload", "warning");
+        return;
+      }
+
+      // Show progress
+      progressSection.style.display = "block";
+      resultsSection.style.display = "none";
+      emergencyAlert.classList.add("d-none");
+
+      showLoading(uploadBtn);
+
+      // Simulate progress
+      let progress = 0;
+      const progressBar = document.getElementById("progressBar");
+      const progressText = document.getElementById("progressText");
+
+      const progressInterval = setInterval(() => {
+        progress += Math.random() * 20;
+        if (progress > 90) progress = 90;
+
+        progressBar.style.width = progress + "%";
+
+        if (progress < 30) {
+          progressText.textContent = "Uploading file...";
+        } else if (progress < 60) {
+          progressText.textContent = "Running YOLOv8 inference...";
+        } else {
+          progressText.textContent = "Analyzing detection results...";
+        }
+      }, 500);
+
+      // Upload file
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+
+      try {
+        const response = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        clearInterval(progressInterval);
+        progressBar.style.width = "100%";
+        progressText.textContent = "Processing complete!";
+
+        if (response.ok) {
+          const result = await response.json();
+          displayResults(result);
+
+          if (
+            result.detection_result &&
+            result.detection_result.ambulance_detected
+          ) {
+            emergencyAlert.classList.remove("d-none");
+            // Trigger green corridor simulation
+            activateGreenCorridor();
+          }
+        } else {
+          const error = await response.json();
+          showAlert(`Upload failed: ${error.error}`, "danger");
+        }
+      } catch (error) {
+        clearInterval(progressInterval);
+        showAlert(`Upload failed: ${error.message}`, "danger");
+      } finally {
+        hideLoading(
+          uploadBtn,
+          '<i class="fas fa-upload me-2"></i>Upload & Analyze'
+        );
+        setTimeout(() => {
+          progressSection.style.display = "none";
+        }, 2000);
+      }
+    });
+
+  function displayResults(result) {
+    const resultsContent = document.getElementById("resultsContent");
+    const resultsSection = document.getElementById("resultsSection");
+    const detection = result.detection_result;
+
+    let html = "";
+
+    if (detection.type === "image") {
+      html = `
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-image me-2"></i>Original Image</h5>
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <p class="text-muted">Original uploaded image</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h5><i class="fas fa-search me-2"></i>Detection Results</h5>
+                    <div class="card">
+                        <img src="${
+                          detection.output_image
+                        }" class="card-img-top" alt="Detection Result">
+                        <div class="card-body">
+                            <p class="card-text">
+                                <strong>Objects Detected:</strong> ${
+                                  detection.detections.length
+                                }<br>
+                                <strong>Ambulance Detected:</strong> 
+                                <span class="badge ${
+                                  detection.ambulance_detected
+                                    ? "bg-success"
+                                    : "bg-secondary"
+                                }">
+                                    ${
+                                      detection.ambulance_detected
+                                        ? "YES"
+                                        : "NO"
+                                    }
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h5><i class="fas fa-list me-2"></i>Detected Objects</h5>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Object Type</th>
+                                    <th>Confidence</th>
+                                    <th>Bounding Box</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${detection.detections
+                                  .map(
+                                    (det) => `
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-primary">${
+                                              det.class
+                                            }</span>
+                                        </td>
+                                        <td>${(det.confidence * 100).toFixed(
+                                          1
+                                        )}%</td>
+                                        <td>
+                                            <small class="text-muted">
+                                                (${det.bbox
+                                                  .map((b) => Math.round(b))
+                                                  .join(", ")})
+                                            </small>
+                                        </td>
+                                    </tr>
+                                `
+                                  )
+                                  .join("")}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else if (detection.type === "video") {
+      html = `
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-video fa-4x text-primary mb-3"></i>
+                            <h5>Video Analysis Complete</h5>
+                            <p class="card-text">
+                                <strong>Frames Processed:</strong> ${
+                                  detection.total_frames_processed
+                                }<br>
+                                <strong>Ambulance Frames:</strong> ${
+                                  detection.ambulance_frames
+                                }<br>
+                                <strong>Detection Rate:</strong> ${(
+                                  detection.confidence_score * 100
+                                ).toFixed(1)}%
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>Analysis Summary</h5>
+                            <div class="mb-3">
+                                <label class="form-label">Emergency Vehicle Detection</label>
+                                <div class="progress">
+                                    <div class="progress-bar ${
+                                      detection.ambulance_detected
+                                        ? "bg-success"
+                                        : "bg-secondary"
+                                    }" 
+                                         style="width: ${
+                                           detection.confidence_score * 100
+                                         }%">
+                                        ${(
+                                          detection.confidence_score * 100
+                                        ).toFixed(1)}%
+                                    </div>
+                                </div>
+                            </div>
+                            <p>
+                                <strong>Status:</strong> 
+                                <span class="badge ${
+                                  detection.ambulance_detected
+                                    ? "bg-success"
+                                    : "bg-secondary"
+                                }">
+                                    ${
+                                      detection.ambulance_detected
+                                        ? "AMBULANCE DETECTED"
+                                        : "NO AMBULANCE"
+                                    }
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    html += `
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6><i class="fas fa-info-circle me-2"></i>Analysis Details</h6>
+                        <p class="mb-1"><strong>Timestamp:</strong> ${new Date(
+                          detection.timestamp
+                        ).toLocaleString()}</p>
+                        <p class="mb-1"><strong>File:</strong> ${
+                          result.filename
+                        }</p>
+                        <p class="mb-0"><strong>Model:</strong> YOLOv8 (best.pt)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    resultsContent.innerHTML = html;
+    resultsSection.style.display = "block";
+  }
+
+  function activateGreenCorridor() {
+    // Simulate green corridor activation
+    showAlert(
+      "🚨 Green corridor activated! Traffic signals prioritized for emergency vehicle.",
+      "success"
+    );
+
+    // You can add more sophisticated green corridor simulation here
+    setTimeout(() => {
+      showAlert(
+        "📍 Emergency vehicle route optimized. Estimated time reduction: 3-5 minutes.",
+        "info"
+      );
+    }, 2000);
+  }
+
+  document.getElementById("clearBtn").addEventListener("click", function () {
+    document.getElementById("uploadForm").reset();
+    document.getElementById("resultsSection").style.display = "none";
+    document.getElementById("progressSection").style.display = "none";
+    document.getElementById("emergencyAlert").classList.add("d-none");
+  });
+</script>
+{% endblock %}

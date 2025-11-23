@@ -1,0 +1,655 @@
+{% extends "base.html" %} {% block title %}Smart Traffic Map - Green Corridor
+System{% endblock %} {% block extra_css %}
+<style>
+  #map {
+    height: 600px;
+    width: 100%;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  }
+
+  .map-controls {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    padding: 25px;
+    color: white;
+    margin-bottom: 20px;
+  }
+
+  .hospital-card {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 10px 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .hospital-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .hospital-card.selected {
+    border: 3px solid #28a745;
+    background: #e8f5e9;
+  }
+
+  .junction-status {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+
+  .junction-green {
+    background: #28a745;
+    box-shadow: 0 0 15px #28a745;
+    animation: pulse 1.5s infinite;
+  }
+
+  .junction-red {
+    background: #dc3545;
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  .route-info {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 15px 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .stat-box {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    margin: 10px 0;
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="text-center mb-4" data-aos="fade-down">
+        <h1 class="display-4 fw-bold text-white mb-3">
+          <i class="fas fa-map-marked-alt me-3"></i>Smart Traffic Map
+        </h1>
+        <p class="lead text-white-50">
+          Real-time traffic control and emergency routing system
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Map Section -->
+    <div class="col-lg-8">
+      <div class="card mb-4" data-aos="fade-right">
+        <div class="card-header bg-success text-white">
+          <h4 class="mb-0">
+            <i class="fas fa-route me-2"></i>Live Traffic Control Map
+          </h4>
+          <small>Click on map to set ambulance location</small>
+        </div>
+        <div class="card-body p-0">
+          <div id="map"></div>
+        </div>
+      </div>
+
+      <!-- Route Information -->
+      <div class="card" data-aos="fade-right" data-aos-delay="200">
+        <div class="card-header bg-info text-white">
+          <h4 class="mb-0">
+            <i class="fas fa-info-circle me-2"></i>Route Information
+          </h4>
+        </div>
+        <div class="card-body">
+          <div id="routeInfo" class="text-center text-muted py-4">
+            <i class="fas fa-map fa-4x mb-3"></i>
+            <h5>No Active Route</h5>
+            <p>
+              Click on the map to set ambulance location, then select a hospital
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls and Info -->
+    <div class="col-lg-4">
+      <!-- Control Panel -->
+      <div class="card mb-4" data-aos="fade-left">
+        <div class="card-header bg-warning text-dark">
+          <h4 class="mb-0">
+            <i class="fas fa-ambulance me-2"></i>Emergency Control
+          </h4>
+        </div>
+        <div class="card-body">
+          <div class="map-controls">
+            <h5 class="mb-3">
+              <i class="fas fa-location-arrow me-2"></i>Set Ambulance Location
+            </h5>
+            <p class="mb-3">Click anywhere on the map to place ambulance</p>
+            <button
+              class="btn btn-light btn-lg w-100 mb-2"
+              id="findNearestBtn"
+              disabled
+            >
+              <i class="fas fa-hospital me-2"></i>Find Nearest Hospital
+            </button>
+            <button
+              class="btn btn-danger btn-lg w-100"
+              id="clearRouteBtn"
+              disabled
+            >
+              <i class="fas fa-times me-2"></i>Clear Route
+            </button>
+          </div>
+
+          <div class="stat-box">
+            <div class="h2 mb-0" id="activeSignalsCount">0</div>
+            <small>Green Signals Active</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hospital List -->
+      <div class="card mb-4" data-aos="fade-left" data-aos-delay="100">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">
+            <i class="fas fa-hospital-alt me-2"></i>Nearby Hospitals
+          </h4>
+        </div>
+        <div class="card-body">
+          <div id="hospitalList">
+            <div class="text-center text-muted py-4">
+              <i class="fas fa-hospital fa-3x mb-3"></i>
+              <p>Set ambulance location to see hospitals</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Junction Status -->
+      <div class="card" data-aos="fade-left" data-aos-delay="200">
+        <div class="card-header bg-secondary text-white">
+          <h4 class="mb-0">
+            <i class="fas fa-traffic-light me-2"></i>Junction Status
+          </h4>
+        </div>
+        <div class="card-body">
+          <div id="junctionStatus">
+            <!-- Will be populated dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
+<script>
+  let map;
+  let ambulanceMarker;
+  let hospitalMarkers = [];
+  let junctionMarkers = [];
+  let routePolyline;
+  let hospitals = [];
+  let junctions = [];
+  let selectedHospital = null;
+
+  // Initialize map
+  document.addEventListener("DOMContentLoaded", function () {
+    // Center on Bengaluru
+    map = L.map("map").setView([12.9716, 77.5946], 12);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "© OpenStreetMap contributors",
+    }).addTo(map);
+
+    // Click on map to set ambulance
+    map.on("click", function (e) {
+      setAmbulanceLocation(e.latlng.lat, e.latlng.lng);
+    });
+
+    // Load initial data
+    loadHospitals();
+    loadJunctions();
+    startStatusUpdates();
+  });
+
+  async function loadHospitals() {
+    try {
+      const response = await fetch("/api/hospitals");
+      const data = await response.json();
+      hospitals = data.hospitals;
+      displayHospitalsOnMap();
+    } catch (error) {
+      console.error("Error loading hospitals:", error);
+    }
+  }
+
+  async function loadJunctions() {
+    try {
+      const response = await fetch("/api/traffic_signals");
+      const data = await response.json();
+      junctions = data.signals;
+      displayJunctionsOnMap();
+      updateJunctionStatus();
+    } catch (error) {
+      console.error("Error loading junctions:", error);
+    }
+  }
+
+  function displayHospitalsOnMap() {
+    // Clear existing markers
+    hospitalMarkers.forEach((m) => map.removeLayer(m));
+    hospitalMarkers = [];
+
+    hospitals.forEach((hospital) => {
+      const icon = L.icon({
+        iconUrl:
+          "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
+        shadowUrl:
+          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
+      });
+
+      const marker = L.marker([hospital.lat, hospital.lng], { icon: icon })
+        .addTo(map)
+        .bindPopup(`<b>${hospital.name}</b><br>${hospital.address}`);
+
+      marker.on("click", () => selectHospital(hospital));
+      hospitalMarkers.push(marker);
+    });
+  }
+
+  function displayJunctionsOnMap() {
+    // Clear existing junction markers
+    junctionMarkers.forEach((item) => map.removeLayer(item.marker));
+    junctionMarkers = [];
+
+    junctions.forEach((junction) => {
+      const color = junction.status === "green" ? "green" : "grey";
+      const icon = L.icon({
+        iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${color}.png`,
+        shadowUrl:
+          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+        iconSize: [20, 33],
+        iconAnchor: [10, 33],
+        popupAnchor: [1, -28],
+        shadowSize: [33, 33],
+      });
+
+      const marker = L.marker([junction.lat, junction.lng], {
+        icon: icon,
+      }).addTo(map).bindPopup(`
+          <b>${junction.name}</b><br>
+          Status: <span style="color: ${
+            junction.status === "green" ? "#28a745" : "#6c757d"
+          }; font-weight: bold;">
+            ${junction.status.toUpperCase()}
+          </span>
+          ${junction.reason ? "<br><small>" + junction.reason + "</small>" : ""}
+        `);
+
+      junctionMarkers.push({ marker: marker, junction: junction });
+    });
+  }
+
+  async function setAmbulanceLocation(lat, lng) {
+    // Remove existing ambulance marker
+    if (ambulanceMarker) {
+      map.removeLayer(ambulanceMarker);
+    }
+
+    // Create ambulance icon
+    const icon = L.icon({
+      iconUrl:
+        "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png",
+      shadowUrl:
+        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41],
+    });
+
+    ambulanceMarker = L.marker([lat, lng], { icon: icon })
+      .addTo(map)
+      .bindPopup("<b>🚑 Ambulance Location</b>")
+      .openPopup();
+
+    // Enable buttons
+    document.getElementById("findNearestBtn").disabled = false;
+    document.getElementById("clearRouteBtn").disabled = false;
+
+    // Update hospital list with distances
+    updateHospitalList(lat, lng);
+
+    // Notify backend
+    try {
+      await fetch("/api/set_ambulance", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lat: lat, lng: lng }),
+      });
+    } catch (error) {
+      console.error("Error setting ambulance location:", error);
+    }
+  }
+
+  function updateHospitalList(ambulanceLat, ambulanceLng) {
+    const list = document.getElementById("hospitalList");
+
+    // Calculate distances
+    const hospitalsWithDistance = hospitals.map((h) => {
+      const distance = haversine(ambulanceLat, ambulanceLng, h.lat, h.lng);
+      return { ...h, distance: distance };
+    });
+
+    // Sort by distance
+    hospitalsWithDistance.sort((a, b) => a.distance - b.distance);
+
+    let html = "";
+    hospitalsWithDistance.forEach((h) => {
+      html += `
+        <div class="hospital-card" onclick="selectHospitalById(${h.id})">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <h6 class="mb-1"><i class="fas fa-hospital text-danger me-2"></i>${
+                h.name
+              }</h6>
+              <small class="text-muted">${h.address}</small>
+            </div>
+            <div class="text-end">
+              <div class="badge bg-primary">${(h.distance / 1000).toFixed(
+                1
+              )} km</div>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+
+    list.innerHTML = html;
+  }
+
+  function haversine(lat1, lon1, lat2, lon2) {
+    const R = 6371000; // meters
+    const φ1 = (lat1 * Math.PI) / 180;
+    const φ2 = (lat2 * Math.PI) / 180;
+    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+    const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+
+    const a =
+      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c;
+  }
+
+  function selectHospitalById(id) {
+    const hospital = hospitals.find((h) => h.id === id);
+    if (hospital) {
+      selectHospital(hospital);
+    }
+  }
+
+  async function selectHospital(hospital) {
+    if (!ambulanceMarker) {
+      alert("Please set ambulance location first");
+      return;
+    }
+
+    selectedHospital = hospital;
+
+    // Highlight selected hospital card
+    document.querySelectorAll(".hospital-card").forEach((card) => {
+      card.classList.remove("selected");
+    });
+    event.currentTarget?.classList.add("selected");
+
+    // Get route
+    await getRoute(hospital);
+  }
+
+  async function getRoute(hospital) {
+    const ambulancePos = ambulanceMarker.getLatLng();
+
+    try {
+      const response = await fetch("/api/directions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          origin: { lat: ambulancePos.lat, lng: ambulancePos.lng },
+          destination: { lat: hospital.lat, lng: hospital.lng },
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.ok) {
+        displayRoute(data.route);
+        displayRouteInfo(data.route, hospital);
+
+        // IMPORTANT: Reload junctions to show green indicators
+        await loadJunctions();
+
+        console.log(
+          `✅ Route activated! ${data.route.green_junctions.length} junctions turned green`
+        );
+      } else {
+        alert("Could not find route: " + (data.error || "Unknown error"));
+      }
+    } catch (error) {
+      console.error("Error getting route:", error);
+      alert("Failed to get route. Please try again.");
+    }
+  }
+
+  function displayRoute(route) {
+    // Remove existing route
+    if (routePolyline) {
+      map.removeLayer(routePolyline);
+    }
+
+    // Draw new route
+    const points = route.points.map((p) => [p.lat, p.lng]);
+    routePolyline = L.polyline(points, {
+      color: "#ff0000",
+      weight: 5,
+      opacity: 0.7,
+      dashArray: "10, 10",
+    }).addTo(map);
+
+    // Fit map to route
+    map.fitBounds(routePolyline.getBounds(), { padding: [50, 50] });
+  }
+
+  function displayRouteInfo(route, hospital) {
+    const leg = route.legs[0];
+    const distance = leg.distance.text;
+    const duration = leg.duration.text;
+    const greenJunctions = route.green_junctions || [];
+
+    const html = `
+      <div class="route-info">
+        <h5 class="mb-3">
+          <i class="fas fa-route text-success me-2"></i>Active Route
+        </h5>
+        <div class="row text-center">
+          <div class="col-4">
+            <i class="fas fa-hospital fa-2x text-danger mb-2"></i>
+            <h6>${hospital.name}</h6>
+          </div>
+          <div class="col-4">
+            <i class="fas fa-road fa-2x text-primary mb-2"></i>
+            <h6>${distance}</h6>
+            <small class="text-muted">Distance</small>
+          </div>
+          <div class="col-4">
+            <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+            <h6>${duration}</h6>
+            <small class="text-muted">ETA</small>
+          </div>
+        </div>
+        <div class="alert alert-success mt-3 mb-0">
+          <i class="fas fa-check-circle me-2"></i>
+          <strong>Green Corridor Activated!</strong>
+          <p class="mb-0 mt-2">
+            ${greenJunctions.length} traffic signal${
+      greenJunctions.length !== 1 ? "s" : ""
+    } along the route 
+            ${
+              greenJunctions.length !== 1 ? "have" : "has"
+            } been optimized for emergency vehicle passage.
+          </p>
+        </div>
+      </div>
+    `;
+
+    document.getElementById("routeInfo").innerHTML = html;
+  }
+
+  function updateJunctionStatus() {
+    const container = document.getElementById("junctionStatus");
+    let html = "";
+
+    junctions.forEach((j) => {
+      const statusClass =
+        j.status === "green" ? "junction-green" : "junction-red";
+      html += `
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div>
+            <span class="junction-status ${statusClass}"></span>
+            <strong>${j.name}</strong>
+          </div>
+          <span class="badge ${
+            j.status === "green" ? "bg-success" : "bg-secondary"
+          }">
+            ${j.status.toUpperCase()}
+          </span>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+
+    // Update green signals count
+    const greenCount = junctions.filter((j) => j.status === "green").length;
+    document.getElementById("activeSignalsCount").textContent = greenCount;
+  }
+
+  document
+    .getElementById("findNearestBtn")
+    .addEventListener("click", async function () {
+      if (!ambulanceMarker) {
+        alert("Please set ambulance location first");
+        return;
+      }
+
+      const pos = ambulanceMarker.getLatLng();
+
+      try {
+        const response = await fetch(
+          `/api/nearest_hospital?lat=${pos.lat}&lng=${pos.lng}`
+        );
+        const data = await response.json();
+
+        if (data.hospital) {
+          selectHospital(data.hospital);
+        }
+      } catch (error) {
+        console.error("Error finding nearest hospital:", error);
+      }
+    });
+
+  document
+    .getElementById("clearRouteBtn")
+    .addEventListener("click", async function () {
+      if (routePolyline) {
+        map.removeLayer(routePolyline);
+        routePolyline = null;
+      }
+      if (ambulanceMarker) {
+        map.removeLayer(ambulanceMarker);
+        ambulanceMarker = null;
+      }
+
+      selectedHospital = null;
+      document.getElementById("routeInfo").innerHTML = `
+      <div class="text-center text-muted py-4">
+        <i class="fas fa-map fa-4x mb-3"></i>
+        <h5>No Active Route</h5>
+        <p>Click on the map to set ambulance location, then select a hospital</p>
+      </div>
+    `;
+
+      document.getElementById("hospitalList").innerHTML = `
+      <div class="text-center text-muted py-4">
+        <i class="fas fa-hospital fa-3x mb-3"></i>
+        <p>Set ambulance location to see hospitals</p>
+      </div>
+    `;
+
+      document.getElementById("findNearestBtn").disabled = true;
+      document.getElementById("clearRouteBtn").disabled = true;
+
+      document.querySelectorAll(".hospital-card").forEach((card) => {
+        card.classList.remove("selected");
+      });
+
+      // Reset junctions on backend
+      await fetch("/api/set_ambulance", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lat: null, lng: null }),
+      });
+
+      // Reload junctions to reset them
+      await loadJunctions();
+    });
+
+  function startStatusUpdates() {
+    setInterval(async () => {
+      // Only update if there's an active route
+      if (routePolyline) {
+        try {
+          const response = await fetch("/api/traffic_signals");
+          const data = await response.json();
+          junctions = data.signals;
+          updateJunctionStatus();
+          displayJunctionsOnMap();
+        } catch (error) {
+          console.error("Error updating status:", error);
+        }
+      }
+    }, 3000); // Update every 3 seconds
+  }
+</script>
+{% endblock %}

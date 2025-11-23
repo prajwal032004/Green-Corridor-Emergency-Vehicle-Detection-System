@@ -1,0 +1,564 @@
+{% extends "base.html" %} {% block title %}Team - Green Corridor System{%
+endblock %} {% block nav_team %}active{% endblock %} {% block extra_css %}
+<style>
+  .team-hero {
+    background: linear-gradient(
+      135deg,
+      var(--white) 0%,
+      var(--cream-dark) 100%
+    );
+    border-radius: var(--border-radius);
+    padding: 4rem 2rem;
+    text-align: center;
+    box-shadow: 0 10px 40px var(--shadow);
+    margin-bottom: 3rem;
+  }
+
+  .team-hero h1 {
+    font-size: 3rem;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .team-hero p {
+    font-size: 1.2rem;
+    color: var(--text-light);
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .team-card {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 20px var(--shadow);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .team-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(
+      90deg,
+      var(--accent) 0%,
+      var(--accent-dark) 100%
+    );
+    transform: scaleX(0);
+    transition: var(--transition);
+  }
+
+  .team-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .team-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 12px 40px var(--shadow-lg);
+  }
+
+  .team-avatar {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(
+      135deg,
+      var(--accent) 0%,
+      var(--accent-dark) 100%
+    );
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 3rem;
+    color: var(--white);
+    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+    transition: var(--transition);
+  }
+
+  .team-card:hover .team-avatar {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 12px 30px rgba(212, 175, 55, 0.4);
+  }
+
+  .team-name {
+    font-size: 1.5rem;
+    color: var(--text-dark);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .team-role {
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+
+  .team-description {
+    color: var(--text-light);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+
+  .team-social {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .social-link {
+    width: 40px;
+    height: 40px;
+    background: var(--cream);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dark);
+    text-decoration: none;
+    transition: var(--transition);
+  }
+
+  .social-link:hover {
+    background: var(--accent);
+    color: var(--white);
+    transform: translateY(-3px);
+  }
+
+  .values-section {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 3rem;
+    box-shadow: 0 4px 20px var(--shadow);
+    margin: 3rem 0;
+  }
+
+  .values-section h2 {
+    color: var(--accent);
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .values-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+
+  .value-card {
+    background: linear-gradient(
+      135deg,
+      var(--cream) 0%,
+      var(--cream-dark) 100%
+    );
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    transition: var(--transition);
+  }
+
+  .value-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px var(--shadow);
+  }
+
+  .value-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(
+      135deg,
+      var(--accent) 0%,
+      var(--accent-dark) 100%
+    );
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 2rem;
+    color: var(--white);
+  }
+
+  .value-card h3 {
+    color: var(--text-dark);
+    font-size: 1.3rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .value-card p {
+    color: var(--text-light);
+    line-height: 1.7;
+  }
+
+  .contact-section {
+    background: linear-gradient(
+      135deg,
+      var(--accent) 0%,
+      var(--accent-dark) 100%
+    );
+    color: var(--white);
+    border-radius: var(--border-radius);
+    padding: 3rem 2rem;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(212, 175, 55, 0.3);
+    margin: 3rem 0;
+  }
+
+  .contact-section h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .contact-section p {
+    font-size: 1.1rem;
+    opacity: 0.95;
+    margin-bottom: 2rem;
+  }
+
+  .contact-info {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 1rem 2rem;
+    border-radius: 30px;
+    backdrop-filter: blur(10px);
+  }
+
+  .contact-item i {
+    font-size: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .team-hero h1 {
+      font-size: 2rem;
+    }
+
+    .team-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .contact-info {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+<!-- Hero -->
+<div class="team-hero">
+  <h1><i class="fas fa-users"></i> Meet Our Team</h1>
+  <p>
+    Dedicated professionals working together to revolutionize emergency response
+    systems
+  </p>
+</div>
+
+<!-- Team Members -->
+<section>
+  <div class="team-grid">
+    <div class="team-card">
+      <div class="team-avatar">
+        <i class="fas fa-user-tie"></i>
+      </div>
+      <h3 class="team-name">Dr. Sarah Johnson</h3>
+      <p class="team-role">Project Lead & AI Researcher</p>
+      <p class="team-description">
+        Ph.D. in Computer Vision with 10+ years of experience in machine
+        learning and traffic management systems
+      </p>
+      <div class="team-social">
+        <a href="#" class="social-link" title="LinkedIn">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+        <a href="#" class="social-link" title="GitHub">
+          <i class="fab fa-github"></i>
+        </a>
+        <a href="#" class="social-link" title="Email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="team-card">
+      <div class="team-avatar">
+        <i class="fas fa-code"></i>
+      </div>
+      <h3 class="team-name">Michael Chen</h3>
+      <p class="team-role">Lead Developer</p>
+      <p class="team-description">
+        Full-stack engineer specializing in Python, computer vision, and
+        real-time systems architecture
+      </p>
+      <div class="team-social">
+        <a href="#" class="social-link" title="LinkedIn">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+        <a href="#" class="social-link" title="GitHub">
+          <i class="fab fa-github"></i>
+        </a>
+        <a href="#" class="social-link" title="Email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="team-card">
+      <div class="team-avatar">
+        <i class="fas fa-brain"></i>
+      </div>
+      <h3 class="team-name">Dr. Priya Patel</h3>
+      <p class="team-role">Machine Learning Engineer</p>
+      <p class="team-description">
+        Expert in deep learning and neural networks, focused on optimizing
+        YOLOv8 for emergency vehicle detection
+      </p>
+      <div class="team-social">
+        <a href="#" class="social-link" title="LinkedIn">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+        <a href="#" class="social-link" title="GitHub">
+          <i class="fab fa-github"></i>
+        </a>
+        <a href="#" class="social-link" title="Email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="team-card">
+      <div class="team-avatar">
+        <i class="fas fa-network-wired"></i>
+      </div>
+      <h3 class="team-name">David Kumar</h3>
+      <p class="team-role">Systems Integration Specialist</p>
+      <p class="team-description">
+        20+ years in traffic management and smart city infrastructure, bridging
+        software with hardware systems
+      </p>
+      <div class="team-social">
+        <a href="#" class="social-link" title="LinkedIn">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+        <a href="#" class="social-link" title="GitHub">
+          <i class="fab fa-github"></i>
+        </a>
+        <a href="#" class="social-link" title="Email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="team-card">
+      <div class="team-avatar">
+        <i class="fas fa-palette"></i>
+      </div>
+      <h3 class="team-name">Emily Rodriguez</h3>
+      <p class="team-role">UX/UI Designer</p>
+      <p class="team-description">
+        Creating intuitive interfaces for emergency services and traffic
+        management operators
+      </p>
+      <div class="team-social">
+        <a href="#" class="social-link" title="LinkedIn">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+        <a href="#" class="social-link" title="Dribbble">
+          <i class="fab fa-dribbble"></i>
+        </a>
+        <a href="#" class="social-link" title="Email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="team-card">
+      <div class="team-avatar">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <h3 class="team-name">James Anderson</h3>
+      <p class="team-role">Data Analyst</p>
+      <p class="team-description">
+        Analyzing system performance metrics and emergency response patterns to
+        drive continuous improvement
+      </p>
+      <div class="team-social">
+        <a href="#" class="social-link" title="LinkedIn">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+        <a href="#" class="social-link" title="GitHub">
+          <i class="fab fa-github"></i>
+        </a>
+        <a href="#" class="social-link" title="Email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Values Section -->
+<div class="values-section">
+  <h2><i class="fas fa-heart"></i> Our Core Values</h2>
+  <div class="values-grid">
+    <div class="value-card">
+      <div class="value-icon">
+        <i class="fas fa-heartbeat"></i>
+      </div>
+      <h3>Life-Saving Mission</h3>
+      <p>
+        Every feature we build is driven by the goal of saving lives and
+        improving emergency response
+      </p>
+    </div>
+
+    <div class="value-card">
+      <div class="value-icon">
+        <i class="fas fa-rocket"></i>
+      </div>
+      <h3>Innovation First</h3>
+      <p>
+        We constantly push the boundaries of AI and computer vision to deliver
+        cutting-edge solutions
+      </p>
+    </div>
+
+    <div class="value-card">
+      <div class="value-icon">
+        <i class="fas fa-shield-alt"></i>
+      </div>
+      <h3>Reliability</h3>
+      <p>
+        Our systems are built for 24/7 operation with maximum uptime and
+        accuracy
+      </p>
+    </div>
+
+    <div class="value-card">
+      <div class="value-icon">
+        <i class="fas fa-hands-helping"></i>
+      </div>
+      <h3>Collaboration</h3>
+      <p>
+        Working closely with emergency services, city planners, and communities
+      </p>
+    </div>
+
+    <div class="value-card">
+      <div class="value-icon">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <h3>Continuous Growth</h3>
+      <p>
+        Always learning, improving, and adapting to new challenges and
+        technologies
+      </p>
+    </div>
+
+    <div class="value-card">
+      <div class="value-icon">
+        <i class="fas fa-globe"></i>
+      </div>
+      <h3>Global Impact</h3>
+      <p>
+        Building scalable solutions that can benefit cities and communities
+        worldwide
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Contact Section -->
+<div class="contact-section">
+  <h2><i class="fas fa-envelope"></i> Get In Touch</h2>
+  <p>Have questions or want to collaborate? We'd love to hear from you!</p>
+  <div class="contact-info">
+    <div class="contact-item">
+      <i class="fas fa-envelope"></i>
+      <span>contact@greencorridor.com</span>
+    </div>
+    <div class="contact-item">
+      <i class="fas fa-phone"></i>
+      <span>+1 (555) 123-4567</span>
+    </div>
+    <div class="contact-item">
+      <i class="fas fa-map-marker-alt"></i>
+      <span>San Francisco, CA</span>
+    </div>
+  </div>
+  <div style="margin-top: 2rem">
+    <a
+      href="/about"
+      class="btn btn-primary"
+      style="background: var(--white); color: var(--accent)"
+    >
+      <i class="fas fa-info-circle"></i> Learn More About Us
+    </a>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+  // Add staggered animation to team cards
+  document.addEventListener("DOMContentLoaded", () => {
+    const teamCards = document.querySelectorAll(".team-card");
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry, index) => {
+          if (entry.isIntersecting) {
+            setTimeout(() => {
+              entry.target.style.animation = "fadeInUp 0.6s ease-out forwards";
+            }, index * 100);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    teamCards.forEach((card, index) => {
+      card.style.opacity = "0";
+      observer.observe(card);
+    });
+
+    // Add animation styles
+    const style = document.createElement("style");
+    style.textContent = `
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+    document.head.appendChild(style);
+  });
+</script>
+{% endblock %}

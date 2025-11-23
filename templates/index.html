@@ -1,0 +1,826 @@
+{% extends "base.html" %} {% block title %}Home - Green Corridor Emergency
+System{% endblock %} {% block extra_css %}
+<style>
+  /* Hero Section */
+  .hero-section {
+    background: linear-gradient(
+        135deg,
+        rgba(102, 126, 234, 0.9) 0%,
+        rgba(118, 75, 162, 0.9) 100%
+      ),
+      url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23667eea" width="1200" height="600"/><path fill="%23ffffff" fill-opacity="0.05" d="M0,100 Q300,200 600,100 T1200,100 V600 H0 Z"/></svg>');
+    background-size: cover;
+    background-position: center;
+    padding: 100px 0;
+    margin-top: -76px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="white" opacity="0.1"/></svg>');
+    animation: float 20s infinite linear;
+  }
+
+  @keyframes float {
+    0% {
+      transform: translateY(0) translateX(0);
+    }
+    100% {
+      transform: translateY(-100px) translateX(100px);
+    }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-title {
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 800;
+    color: white;
+    text-shadow: 2px 2px 20px rgba(0, 0, 0, 0.2);
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 2rem;
+    line-height: 1.8;
+  }
+
+  .hero-stats {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+    margin-top: 40px;
+  }
+
+  .stat-item {
+    text-align: center;
+    color: white;
+    padding: 15px;
+  }
+
+  .stat-number {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .stat-label {
+    font-size: clamp(0.875rem, 1.5vw, 1rem);
+    opacity: 0.9;
+  }
+
+  /* Feature Cards */
+  .feature-card {
+    background: white;
+    border-radius: 20px;
+    padding: 40px 30px;
+    text-align: center;
+    height: 100%;
+    transition: all 0.4s ease;
+    border: 2px solid transparent;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-10px);
+    border-color: #667eea;
+    box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+  }
+
+  .feature-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 25px;
+    font-size: 2rem;
+    transition: all 0.3s ease;
+  }
+
+  .feature-card:hover .feature-icon {
+    transform: scale(1.1) rotate(5deg);
+  }
+
+  .icon-detection {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .icon-traffic {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+  }
+
+  .icon-alert {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+  }
+
+  .icon-analytics {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    color: white;
+  }
+
+  .feature-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #2d3748;
+  }
+
+  .feature-description {
+    color: #718096;
+    line-height: 1.8;
+    font-size: 1rem;
+  }
+
+  /* How It Works Section */
+  .how-it-works {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 80px 0;
+    position: relative;
+  }
+
+  .step-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    position: relative;
+    height: 100%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  }
+
+  .step-number {
+    position: absolute;
+    top: -20px;
+    left: 30px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.5rem;
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  }
+
+  .step-icon {
+    font-size: 3rem;
+    margin: 20px 0;
+    color: #667eea;
+  }
+
+  .step-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #2d3748;
+  }
+
+  /* CTA Section */
+  .cta-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 80px 0;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.1) 1px,
+      transparent 1px
+    );
+    background-size: 50px 50px;
+    animation: drift 30s linear infinite;
+  }
+
+  @keyframes drift {
+    0% {
+      transform: rotate(0deg) translate(0, 0);
+    }
+    100% {
+      transform: rotate(360deg) translate(50px, 50px);
+    }
+  }
+
+  .cta-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .cta-title {
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 800;
+    margin-bottom: 20px;
+  }
+
+  .cta-subtitle {
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    opacity: 0.95;
+    margin-bottom: 30px;
+  }
+
+  /* Buttons */
+  .btn-hero {
+    padding: 15px 40px;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  .btn-hero:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .btn-primary-gradient {
+    background: white;
+    color: #667eea;
+  }
+
+  .btn-primary-gradient:hover {
+    background: #f7fafc;
+    color: #5568d3;
+  }
+
+  .btn-outline-light-custom {
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+  }
+
+  .btn-outline-light-custom:hover {
+    background: white;
+    color: #667eea;
+  }
+
+  /* Benefits Section */
+  .benefits-section {
+    padding: 80px 0;
+  }
+
+  .benefit-item {
+    display: flex;
+    align-items: start;
+    margin-bottom: 30px;
+    padding: 25px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+  }
+
+  .benefit-item:hover {
+    transform: translateX(10px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+  }
+
+  .benefit-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    margin-right: 20px;
+    flex-shrink: 0;
+  }
+
+  .benefit-content h5 {
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #2d3748;
+  }
+
+  .benefit-content p {
+    color: #718096;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .hero-section {
+      padding: 60px 0 40px;
+    }
+
+    .hero-stats {
+      padding: 20px;
+      margin-top: 30px;
+    }
+
+    .stat-item {
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+
+    .feature-card {
+      padding: 30px 20px;
+      margin-bottom: 20px;
+    }
+
+    .how-it-works {
+      padding: 60px 0;
+    }
+
+    .step-card {
+      margin-bottom: 40px;
+    }
+
+    .cta-section {
+      padding: 60px 0;
+    }
+
+    .btn-hero {
+      padding: 12px 30px;
+      font-size: 1rem;
+      margin-bottom: 15px;
+      width: 100%;
+    }
+
+    .benefit-item {
+      flex-direction: column;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .benefit-icon {
+      margin: 0 auto 15px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .hero-title {
+      font-size: 2rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1rem;
+    }
+
+    .feature-icon {
+      width: 60px;
+      height: 60px;
+      font-size: 1.5rem;
+    }
+
+    .feature-title {
+      font-size: 1.2rem;
+    }
+  }
+
+  /* Animation Classes */
+  .fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .pulse-animation {
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="container">
+    <div class="hero-content text-center" data-aos="fade-up">
+      <h1 class="hero-title">
+        <i class="fas fa-ambulance me-3 pulse-animation"></i>
+        Green Corridor System
+      </h1>
+      <p class="hero-subtitle">
+        AI-Powered Emergency Vehicle Detection & Traffic Management System<br />
+        Saving Lives Through Intelligent Traffic Control
+      </p>
+
+      <div class="mt-4">
+        <a
+          href="/dashboard"
+          class="btn btn-hero btn-primary-gradient me-3 mb-3"
+        >
+          <i class="fas fa-tachometer-alt me-2"></i>Launch Dashboard
+        </a>
+        <a href="/map" class="btn btn-hero btn-outline-light-custom mb-3">
+          <i class="fas fa-map-marked-alt me-2"></i>View Traffic Map
+        </a>
+      </div>
+
+      <!-- Hero Stats -->
+      <div class="hero-stats" data-aos="fade-up" data-aos-delay="200">
+        <div class="row">
+          <div class="col-6 col-md-3">
+            <div class="stat-item">
+              <span class="stat-number"
+                ><i class="fas fa-check-circle"></i> 99%</span
+              >
+              <span class="stat-label">Detection Accuracy</span>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-item">
+              <span class="stat-number"
+                ><i class="fas fa-clock"></i> &lt;2s</span
+              >
+              <span class="stat-label">Response Time</span>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-item">
+              <span class="stat-number"
+                ><i class="fas fa-traffic-light"></i> 24/7</span
+              >
+              <span class="stat-label">Real-Time Monitoring</span>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-item">
+              <span class="stat-number"
+                ><i class="fas fa-heartbeat"></i> 100+</span
+              >
+              <span class="stat-label">Lives Saved</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="text-center mb-5" data-aos="fade-up">
+      <h2 class="display-5 fw-bold mb-3">Key Features</h2>
+      <p class="lead text-muted">
+        Advanced AI technology for emergency vehicle management
+      </p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+        <div class="feature-card">
+          <div class="feature-icon icon-detection">
+            <i class="fas fa-eye"></i>
+          </div>
+          <h4 class="feature-title">AI Detection</h4>
+          <p class="feature-description">
+            YOLOv8-powered real-time ambulance detection with 99% accuracy
+          </p>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+        <div class="feature-card">
+          <div class="feature-icon icon-traffic">
+            <i class="fas fa-traffic-light"></i>
+          </div>
+          <h4 class="feature-title">Smart Traffic Control</h4>
+          <p class="feature-description">
+            Automatic green corridor activation at traffic junctions
+          </p>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+        <div class="feature-card">
+          <div class="feature-icon icon-alert">
+            <i class="fas fa-bell"></i>
+          </div>
+          <h4 class="feature-title">Instant Alerts</h4>
+          <p class="feature-description">
+            Real-time notifications to traffic authorities and hospitals
+          </p>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+        <div class="feature-card">
+          <div class="feature-icon icon-analytics">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <h4 class="feature-title">Live Analytics</h4>
+          <p class="feature-description">
+            Comprehensive dashboard with real-time metrics and statistics
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="how-it-works">
+  <div class="container">
+    <div class="text-center mb-5" data-aos="fade-up">
+      <h2 class="display-5 fw-bold mb-3">How It Works</h2>
+      <p class="lead text-muted">
+        Simple, fast, and effective emergency vehicle management
+      </p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <div class="step-icon">
+            <i class="fas fa-video"></i>
+          </div>
+          <h5 class="step-title">Detection</h5>
+          <p class="text-muted">
+            AI cameras detect approaching ambulances using YOLOv8 computer
+            vision
+          </p>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <div class="step-icon">
+            <i class="fas fa-brain"></i>
+          </div>
+          <h5 class="step-title">Analysis</h5>
+          <p class="text-muted">
+            System processes the detection and calculates optimal route to
+            destination
+          </p>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <div class="step-icon">
+            <i class="fas fa-route"></i>
+          </div>
+          <h5 class="step-title">Activation</h5>
+          <p class="text-muted">
+            Green corridor automatically activated at all junctions along the
+            route
+          </p>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+        <div class="step-card">
+          <div class="step-number">4</div>
+          <div class="step-icon">
+            <i class="fas fa-hospital"></i>
+          </div>
+          <h5 class="step-title">Safe Arrival</h5>
+          <p class="text-muted">
+            Emergency vehicle reaches hospital quickly and safely, saving
+            precious time
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Benefits Section -->
+<section class="benefits-section bg-white">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
+        <h2 class="display-5 fw-bold mb-4">Why Choose Our System?</h2>
+        <p class="lead text-muted mb-4">
+          Revolutionary technology that saves lives by reducing emergency
+          response times
+        </p>
+
+        <div class="benefit-item">
+          <div class="benefit-icon">
+            <i class="fas fa-bolt"></i>
+          </div>
+          <div class="benefit-content">
+            <h5>Lightning Fast Response</h5>
+            <p>Detects and activates green corridor in under 2 seconds</p>
+          </div>
+        </div>
+
+        <div class="benefit-item">
+          <div class="benefit-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <div class="benefit-content">
+            <h5>Highly Reliable</h5>
+            <p>99% detection accuracy with minimal false positives</p>
+          </div>
+        </div>
+
+        <div class="benefit-item">
+          <div class="benefit-icon">
+            <i class="fas fa-cogs"></i>
+          </div>
+          <div class="benefit-content">
+            <h5>Easy Integration</h5>
+            <p>
+              Seamlessly integrates with existing traffic management systems
+            </p>
+          </div>
+        </div>
+
+        <div class="benefit-item">
+          <div class="benefit-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="benefit-content">
+            <h5>24/7 Operation</h5>
+            <p>Continuous monitoring and instant activation, day and night</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6" data-aos="fade-left">
+        <div class="text-center">
+          <img
+            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'%3E%3Crect fill='%23667eea' width='600' height='600' rx='30'/%3E%3Cpath fill='%23ffffff' opacity='0.1' d='M0,300 Q150,200 300,300 T600,300 V600 H0 Z'/%3E%3Ccircle cx='300' cy='250' r='120' fill='%23ffffff' opacity='0.2'/%3E%3Ctext x='300' y='270' font-size='120' fill='%23ffffff' text-anchor='middle' font-family='Arial'%3E🚑%3C/text%3E%3Ctext x='300' y='420' font-size='32' fill='%23ffffff' text-anchor='middle' font-family='Arial' font-weight='bold'%3ESaving Lives%3C/text%3E%3Ctext x='300' y='460' font-size='24' fill='%23ffffff' opacity='0.8' text-anchor='middle' font-family='Arial'%3EWith AI Technology%3C/text%3E%3C/svg%3E"
+            alt="Green Corridor System"
+            class="img-fluid rounded-4 shadow-lg"
+            style="max-width: 500px"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-content text-center" data-aos="zoom-in">
+      <h2 class="cta-title">Ready to Save Lives?</h2>
+      <p class="cta-subtitle">
+        Start using our AI-powered green corridor system today
+      </p>
+      <div class="mt-4">
+        <a
+          href="/dashboard"
+          class="btn btn-hero btn-primary-gradient me-3 mb-3"
+        >
+          <i class="fas fa-rocket me-2"></i>Get Started Now
+        </a>
+        <a href="/about" class="btn btn-hero btn-outline-light-custom mb-3">
+          <i class="fas fa-info-circle me-2"></i>Learn More
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Technology Stack Section -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="text-center mb-5" data-aos="fade-up">
+      <h2 class="display-5 fw-bold mb-3">Powered By</h2>
+      <p class="lead text-muted">
+        Cutting-edge technologies for reliable performance
+      </p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+      <div
+        class="col-lg-2 col-md-4 col-6 text-center"
+        data-aos="fade-up"
+        data-aos-delay="100"
+      >
+        <div class="p-4 bg-white rounded-4 shadow-sm h-100">
+          <i class="fas fa-brain fa-3x mb-3" style="color: #667eea"></i>
+          <h6 class="fw-bold">YOLOv8</h6>
+          <small class="text-muted">AI Detection</small>
+        </div>
+      </div>
+      <div
+        class="col-lg-2 col-md-4 col-6 text-center"
+        data-aos="fade-up"
+        data-aos-delay="200"
+      >
+        <div class="p-4 bg-white rounded-4 shadow-sm h-100">
+          <i class="fab fa-python fa-3x mb-3" style="color: #3776ab"></i>
+          <h6 class="fw-bold">Python</h6>
+          <small class="text-muted">Backend</small>
+        </div>
+      </div>
+      <div
+        class="col-lg-2 col-md-4 col-6 text-center"
+        data-aos="fade-up"
+        data-aos-delay="300"
+      >
+        <div class="p-4 bg-white rounded-4 shadow-sm h-100">
+          <i class="fab fa-js fa-3x mb-3" style="color: #f7df1e"></i>
+          <h6 class="fw-bold">JavaScript</h6>
+          <small class="text-muted">Frontend</small>
+        </div>
+      </div>
+      <div
+        class="col-lg-2 col-md-4 col-6 text-center"
+        data-aos="fade-up"
+        data-aos-delay="400"
+      >
+        <div class="p-4 bg-white rounded-4 shadow-sm h-100">
+          <i
+            class="fas fa-map-marked-alt fa-3x mb-3"
+            style="color: #28a745"
+          ></i>
+          <h6 class="fw-bold">Leaflet</h6>
+          <small class="text-muted">Maps</small>
+        </div>
+      </div>
+      <div
+        class="col-lg-2 col-md-4 col-6 text-center"
+        data-aos="fade-up"
+        data-aos-delay="500"
+      >
+        <div class="p-4 bg-white rounded-4 shadow-sm h-100">
+          <i class="fab fa-bootstrap fa-3x mb-3" style="color: #7952b3"></i>
+          <h6 class="fw-bold">Bootstrap</h6>
+          <small class="text-muted">UI Framework</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %} {% block extra_js %}
+<script>
+  // Add interactive elements
+  document.addEventListener("DOMContentLoaded", function () {
+    // Animate stat numbers on scroll
+    const statNumbers = document.querySelectorAll(".stat-number");
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.style.animation = "fadeInUp 0.6s ease-out";
+        }
+      });
+    });
+
+    statNumbers.forEach((stat) => observer.observe(stat));
+
+    // Add hover effect to feature cards
+    const featureCards = document.querySelectorAll(".feature-card");
+    featureCards.forEach((card) => {
+      card.addEventListener("mouseenter", function () {
+        this.style.transform = "translateY(-10px) scale(1.02)";
+      });
+      card.addEventListener("mouseleave", function () {
+        this.style.transform = "translateY(-5px) scale(1)";
+      });
+    });
+  });
+</script>
+{% endblock %}

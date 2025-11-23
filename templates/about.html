@@ -1,0 +1,344 @@
+{% extends "base.html" %} {% block title %}About - Green Corridor System{%
+endblock %} {% block extra_css %}
+<style>
+  .about-hero {
+    background: linear-gradient(
+      135deg,
+      rgba(102, 126, 234, 0.95) 0%,
+      rgba(118, 75, 162, 0.95) 100%
+    );
+    padding: 80px 0 60px;
+    margin-top: -76px;
+    color: white;
+    text-align: center;
+  }
+
+  .about-hero h1 {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800;
+    margin-bottom: 20px;
+  }
+
+  .about-hero p {
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    opacity: 0.95;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .mission-section {
+    padding: 60px 0;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  }
+
+  .mission-card {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    height: 100%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+  }
+
+  .mission-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 50px rgba(102, 126, 234, 0.2);
+  }
+
+  .mission-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin: 0 auto 25px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .mission-card h3 {
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #2d3748;
+    font-size: 1.5rem;
+  }
+
+  .mission-card p {
+    color: #718096;
+    line-height: 1.8;
+    margin: 0;
+  }
+
+  .team-section {
+    padding: 60px 0;
+    background: white;
+  }
+
+  .team-member {
+    text-align: center;
+    padding: 30px 20px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    height: 100%;
+  }
+
+  .team-member:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 50px rgba(102, 126, 234, 0.2);
+  }
+
+  .team-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: white;
+    font-weight: 800;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  }
+
+  .team-member h4 {
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #2d3748;
+    font-size: 1.3rem;
+  }
+
+  .team-member .role {
+    color: #667eea;
+    font-weight: 600;
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+  }
+
+  .team-member .description {
+    color: #718096;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .section-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    margin-bottom: 15px;
+    color: #2d3748;
+  }
+
+  .section-subtitle {
+    color: #718096;
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    margin-bottom: 50px;
+  }
+
+  @media (max-width: 768px) {
+    .about-hero {
+      padding: 60px 0 40px;
+    }
+
+    .mission-section,
+    .team-section {
+      padding: 40px 0;
+    }
+
+    .mission-card {
+      padding: 30px 20px;
+      margin-bottom: 20px;
+    }
+
+    .team-member {
+      margin-bottom: 25px;
+    }
+
+    .team-avatar {
+      width: 100px;
+      height: 100px;
+      font-size: 2.5rem;
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+<!-- Hero Section -->
+<section class="about-hero">
+  <div class="container">
+    <div data-aos="fade-up">
+      <h1><i class="fas fa-info-circle me-3"></i>About Us</h1>
+      <p>
+        Revolutionizing emergency response with AI-powered traffic management to
+        save lives
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Mission Section -->
+<section class="mission-section">
+  <div class="container">
+    <div class="text-center mb-5" data-aos="fade-up">
+      <h2 class="section-title">Our Mission</h2>
+      <p class="section-subtitle">
+        Combining innovation and compassion to make a difference
+      </p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="mission-card text-center">
+          <div class="mission-icon">
+            <i class="fas fa-heart"></i>
+          </div>
+          <h3>Save Lives</h3>
+          <p>
+            Reduce emergency response times by clearing traffic routes
+            automatically for ambulances
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="mission-card text-center">
+          <div class="mission-icon">
+            <i class="fas fa-robot"></i>
+          </div>
+          <h3>AI Innovation</h3>
+          <p>
+            Leverage cutting-edge YOLOv8 technology for real-time vehicle
+            detection with 99% accuracy
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="mission-card text-center">
+          <div class="mission-icon">
+            <i class="fas fa-city"></i>
+          </div>
+          <h3>Smart Cities</h3>
+          <p>
+            Build intelligent infrastructure that responds instantly to
+            emergency situations
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Team Section -->
+<section class="team-section">
+  <div class="container">
+    <div class="text-center mb-5" data-aos="fade-up">
+      <h2 class="section-title">Meet Our Team</h2>
+      <p class="section-subtitle">
+        The innovators behind Green Corridor System
+      </p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+      <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+        <div class="team-member">
+          <div class="team-avatar">P</div>
+          <h4>Prajwal</h4>
+          <p class="role">AI & Backend Lead</p>
+          <p class="description">
+            Specializes in computer vision and traffic optimization algorithms
+          </p>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+        <div class="team-member">
+          <div class="team-avatar">M</div>
+          <h4>Manoj</h4>
+          <p class="role">Full Stack Developer</p>
+          <p class="description">
+            Expert in system integration and real-time data processing
+          </p>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+        <div class="team-member">
+          <div class="team-avatar">H</div>
+          <h4>Hemanth</h4>
+          <p class="role">Frontend Developer</p>
+          <p class="description">
+            Creates intuitive interfaces for seamless user experience
+          </p>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+        <div class="team-member">
+          <div class="team-avatar">V</div>
+          <h4>Vignesh</h4>
+          <p class="role">IoT & Hardware Lead</p>
+          <p class="description">
+            Designs smart sensor networks and traffic signal integration
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Impact Section -->
+<section class="mission-section">
+  <div class="container">
+    <div class="text-center" data-aos="fade-up">
+      <h2 class="section-title mb-4">Our Impact</h2>
+      <div class="row g-4 justify-content-center">
+        <div class="col-md-3 col-6">
+          <div class="mission-card text-center">
+            <h3 class="text-primary mb-2" style="font-size: 3rem">99%</h3>
+            <p class="mb-0 fw-bold">Detection Accuracy</p>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="mission-card text-center">
+            <h3 class="text-success mb-2" style="font-size: 3rem">&lt;2s</h3>
+            <p class="mb-0 fw-bold">Response Time</p>
+          </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-white">
+  <div class="container text-center" data-aos="zoom-in">
+    <h2 class="section-title mb-4">Join Our Mission</h2>
+    <p class="section-subtitle mb-4">
+      Together, we can make emergency response faster and save more lives
+    </p>
+    <a
+      href="/dashboard"
+      class="btn btn-lg btn-primary px-5 py-3"
+      style="border-radius: 50px; font-weight: 700"
+    >
+      <i class="fas fa-rocket me-2"></i>Try Dashboard Now
+    </a>
+  </div>
+</section>
+{% endblock %} {% block extra_js %}
+<script>
+  // Add smooth scroll behavior
+  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    anchor.addEventListener("click", function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute("href"));
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  });
+</script>
+{% endblock %}
